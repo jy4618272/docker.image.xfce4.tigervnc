@@ -3,11 +3,11 @@
 FROM takaomag/base:2015.12.03.07.30
 
 ENV \
-    X_DOCKER_REPO_NAME=xfce4-tigervnc
+    X_DOCKER_REPO_NAME=xfce4.tigervnc
 
 # ADD files /
-ADD files/etc
-ADD files/root
+ADD files/etc /etc
+ADD files/root /root
 
 RUN \
     echo "2015-12-04-0" > /dev/null && \

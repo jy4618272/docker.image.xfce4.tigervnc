@@ -42,22 +42,26 @@ RUN \
     sudo -u nobody yaourt -S --needed --noconfirm --noprogressbar "${REQUIRED_PACKAGES[@]}" && \
     echo -e "${FONT_SUCCESS}[SUCCESS] Installed required packages [${REQUIRED_PACKAGES[@]}]${FONT_DEFAULT}" && \
     echo -e "${FONT_INFO}[INFO] Installing fonts${FONT_DEFAULT}" && \
-    sudo -u nobody yaourt -G --noconfirm ttf-ms-win8 && \
-    cd /tmp/ttf-ms-win8 && \
-    curl --fail --silent --location --remote-name https://s3-ap-northeast-1.amazonaws.com/mago-ap-northeast-1/archlinux/win8/Fonts.zip && \
-    unzip -q Fonts.zip && \
-    mv Fonts/* . && \
-    rm -rf Fonts && \
-    rm Fonts.zip && \
-    curl --fail --silent --location --remote-name https://s3-ap-northeast-1.amazonaws.com/mago-ap-northeast-1/archlinux/win8/license.rtf && \
-    sed --in-place -e 's/^PKGEXT=/#PKGEXT=/g' PKGBUILD && \
+#    (sudo -u nobody yaourt -G --noconfirm ttf-ms-win8 || true) && \
+#    cd /tmp/ttf-ms-win8 && \
+#    curl --fail --silent --location --remote-name https://s3-ap-northeast-1.amazonaws.com/mago-ap-northeast-1/archlinux/win8/Fonts.zip && \
+#    unzip -q Fonts.zip && \
+#    mv Fonts/* . && \
+#    rm -rf Fonts && \
+#    rm Fonts.zip && \
+#    curl --fail --silent --location --remote-name https://s3-ap-northeast-1.amazonaws.com/mago-ap-northeast-1/archlinux/win8/license.rtf && \
+#    sed --in-place -e 's/^PKGEXT=/#PKGEXT=/g' PKGBUILD && \
+    (sudo -u nobody yaourt -G --noconfirm ttf-ms-win10 || true) && \
+    cd /tmp/ttf-ms-win10 && \
+    curl --fail --silent --location https://s3-ap-northeast-1.amazonaws.com/mago-ap-northeast-1/archlinux/win10/win10-fonts.tgz | tar xz && \
 #    sudo -u nobody makepkg PKGBUILD && \
 #    sudo -u nobody yaourt -U --noconfirm --noprogressbar *.pkg.tar.* && \
 #    sudo -u nobody yaourt -U --noconfirm --noprogressbar $(ls *.pkg.tar.*)
 #    sudo -u nobody yaourt -U --noconfirm $(find ./ -mindepth 1 -maxdepth 1 -type f -name '*\.pkg\.*' -print0 | sed -e 's/\x0/ /g') && \
     sudo -u nobody makepkg --install --noconfirm --noprogressbar && \
     cd /tmp && \
-    rm -rf ttf-ms-win8 && \
+#    rm -rf ttf-ms-win8 && \
+    rm -rf ttf-ms-win10 && \
     expect -c "$(echo -e 'set send_slow {1 0.3}\nset timeout -1\nspawn fc-presets set\nexpect {\n  -exact "Enter your choice... " { sleep 0.3; send -- "3\\r"; exp_continue }\n  eof { exit 0 }\n}')" && \
     sudo -u nobody yaourt -Rsn  --noconfirm --noprogressbar fontforge && \
     echo -e "${FONT_SUCCESS}[SUCCESS] Installed fonts${FONT_DEFAULT}" && \
@@ -72,7 +76,7 @@ RUN \
     sed --in-place -e "s/^unlink(\$desktopLog);/# ${X_DOCKER_ID}\/${X_DOCKER_REPO_NAME} #unlink(\$desktopLog);/g" /usr/bin/vncserver && \
     echo -e "${FONT_INFO}[INFO] Changing vnc password [password=${X_DOCKER_ID}/${X_DOCKER_REPO_NAME}]${FONT_DEFAULT}" && \
 #    _expect_cmd=$(echo -e 'set send_slow {1 0.3}\nset timeout -1\nspawn vncpasswd\nexpect {\n -exact "Password:" { sleep 0.3; send -- "'${X_DOCKER_ID}'/'${X_DOCKER_REPO_NAME}'\\r"; exp_continue }\n -exact "Verify:" { sleep 0.3; send -- "'${X_DOCKER_ID}'/'${X_DOCKER_REPO_NAME}'\\r"; exp_continue }\n -exact "Would you like to enter a view-only password (y/n)? " { sleep 0.3; send -- "n\r"; exp_continue }\n eof { exit 0 }\n}') && \
-    _expect_cmd=$(echo -e 'set send_slow {1 0.3}\nset timeout -1\nspawn vncpasswd\nexpect {\n -exact "Password:" { sleep 0.3; send -- "'${X_DOCKER_ID}'\\r"; exp_continue }\n -exact "Verify:" { sleep 0.3; send -- "'${X_DOCKER_ID}'/'${X_DOCKER_REPO_NAME}'\\r"; exp_continue }\n -exact "Would you like to enter a view-only password (y/n)? " { sleep 0.3; send -- "n\r"; exp_continue }\n eof { exit 0 }\n}') && \
+    _expect_cmd=$(echo -e 'set send_slow {1 0.3}\nset timeout -1\nspawn vncpasswd\nexpect {\n -exact "Password:" { sleep 0.3; send -- "'${X_DOCKER_ID}'\\r"; exp_continue }\n -exact "Verify:" { sleep 0.3; send -- "'${X_DOCKER_ID}'\\r"; exp_continue }\n -exact "Would you like to enter a view-only password (y/n)? " { sleep 0.3; send -- "n\r"; exp_continue }\n eof { exit 0 }\n}') && \
     expect -c "${_expect_cmd}" && \
     echo -e "${FONT_INFO}[INFO] Changed vnc password [password=${X_DOCKER_ID}/${X_DOCKER_REPO_NAME}]${FONT_DEFAULT}" && \
     echo -e "${FONT_INFO}[INFO] Configured xfce4/vnc${FONT_DEFAULT}" && \

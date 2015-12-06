@@ -1,6 +1,6 @@
 # xfce4-tigervnc
 
-FROM takaomag/base:2015.12.03.07.30
+FROM takaomag/base:2015.12.06.13.39
 
 ENV \
     X_DOCKER_REPO_NAME=xfce4.tigervnc
@@ -8,6 +8,7 @@ ENV \
 # ADD files /
 ADD files/etc /etc
 ADD files/root /root
+ADD files/usr/lib/systemd/system /usr/lib/systemd/system
 
 RUN \
     echo "2015-12-04-0" > /dev/null && \
@@ -28,6 +29,7 @@ RUN \
     chown -R root:root /root/.vnc && \
     chmod 700 /root/.vnc && \
     chmod 755 /root/.vnc/xstartup && \
+    chmod 644 /usr/lib/systemd/system/x-vncserver@.service && \
     echo -e "${FONT_INFO}[INFO] Updating package database${FONT_DEFAULT}" && \
     reflector --latest 100 --verbose --sort score --save /etc/pacman.d/mirrorlist && \
     sudo -u nobody yaourt -Syy && \
@@ -40,6 +42,9 @@ RUN \
     pacman-key --lsign-key 962DDE58 && \
     sudo -u nobody yaourt -Syy && \
     sudo -u nobody yaourt -S --needed --noconfirm --noprogressbar "${REQUIRED_PACKAGES[@]}" && \
+    cd /usr/lib/systemd/system && \
+    ln -s ../x-vncserver@.service x-vncserver@:1.service && \
+    cd /tmp && \
     echo -e "${FONT_SUCCESS}[SUCCESS] Installed required packages [${REQUIRED_PACKAGES[@]}]${FONT_DEFAULT}" && \
     echo -e "${FONT_INFO}[INFO] Installing fonts${FONT_DEFAULT}" && \
 #    (sudo -u nobody yaourt -G --noconfirm ttf-ms-win8 || true) && \
@@ -72,25 +77,34 @@ RUN \
     echo -e "\n# ${X_DOCKER_ID}/${X_DOCKER_REPO_NAME} >>>\nexec startxfce4\n# ${X_DOCKER_ID}/${X_DOCKER_REPO_NAME} <<<\n" >> /etc/skel/.xinitrc && \
     cp -apr /etc/skel/.xinitrc /root/. && \
 #    cp -apr /etc/skel/.xsession /root/. && \
-    sed --in-place -e "s/^\(\$desktopLog =.\+\)/# ${X_DOCKER_ID}\/${X_DOCKER_REPO_NAME} #\1\n\$desktopLog = \"\/dev\/stdout\";/g" /usr/bin/vncserver && \
+#    sed --in-place -e "s/^\(\$desktopLog =.\+\)/# ${X_DOCKER_ID}\/${X_DOCKER_REPO_NAME} #\1\n\$desktopLog = \"\/dev\/stdout\";/g" /usr/bin/vncserver && \
+    sed --in-place -e "s/^\(\$desktopLog =.\+\)/# ${X_DOCKER_ID}\/${X_DOCKER_REPO_NAME} #\1\n\$desktopLog = \"\/dev\/console\";/g" /usr/bin/vncserver && \
     sed --in-place -e "s/^unlink(\$desktopLog);/# ${X_DOCKER_ID}\/${X_DOCKER_REPO_NAME} #unlink(\$desktopLog);/g" /usr/bin/vncserver && \
     echo -e "${FONT_INFO}[INFO] Changing vnc password [password=${X_DOCKER_ID}/${X_DOCKER_REPO_NAME}]${FONT_DEFAULT}" && \
 #    _expect_cmd=$(echo -e 'set send_slow {1 0.3}\nset timeout -1\nspawn vncpasswd\nexpect {\n -exact "Password:" { sleep 0.3; send -- "'${X_DOCKER_ID}'/'${X_DOCKER_REPO_NAME}'\\r"; exp_continue }\n -exact "Verify:" { sleep 0.3; send -- "'${X_DOCKER_ID}'/'${X_DOCKER_REPO_NAME}'\\r"; exp_continue }\n -exact "Would you like to enter a view-only password (y/n)? " { sleep 0.3; send -- "n\r"; exp_continue }\n eof { exit 0 }\n}') && \
     _expect_cmd=$(echo -e 'set send_slow {1 0.3}\nset timeout -1\nspawn vncpasswd\nexpect {\n -exact "Password:" { sleep 0.3; send -- "'${X_DOCKER_ID}'\\r"; exp_continue }\n -exact "Verify:" { sleep 0.3; send -- "'${X_DOCKER_ID}'\\r"; exp_continue }\n -exact "Would you like to enter a view-only password (y/n)? " { sleep 0.3; send -- "n\r"; exp_continue }\n eof { exit 0 }\n}') && \
     expect -c "${_expect_cmd}" && \
-    echo -e "${FONT_INFO}[INFO] Changed vnc password [password=${X_DOCKER_ID}/${X_DOCKER_REPO_NAME}]${FONT_DEFAULT}" && \
+#    echo -e "${FONT_INFO}[INFO] Changed vnc password [password=${X_DOCKER_ID}/${X_DOCKER_REPO_NAME}]${FONT_DEFAULT}" && \
+    echo -e "${FONT_INFO}[INFO] Changed vnc password [password=${X_DOCKER_ID}]${FONT_DEFAULT}" && \
     echo -e "${FONT_INFO}[INFO] Configured xfce4/vnc${FONT_DEFAULT}" && \
     /opt/local/bin/x-archlinux-remove-unnecessary-files.sh && \
-    pacman-optimize
+    pacman-optimize && \
+    rm -f /etc/machine-id
 
 EXPOSE \
     22 \
     5901 \
     9001
 
-ENTRYPOINT ["/usr/bin/supervisord", "--nodaemon", "--configuration=/etc/supervisord.conf"]
+#ENTRYPOINT ["/usr/bin/supervisord", "--nodaemon", "--configuration=/etc/supervisord.conf"]
+ENTRYPOINT ["/usr/lib/systemd/systemd"]
 
-# docker run --rm --name=xxx -P -e LANG=ja_JP.UTF-8 takaomag/xfce4-tigervnc
+# By systemd
+# docker run --name=xxx -d -P --cap-add SYS_ADMIN --env container=docker --env container_uuid=xxxx --env LANG=ja_JP.UTF-8 --volume /sys/fs/cgroup:/sys/fs/cgroup:ro takaomag/xfce4-tigervnc
+
+# By supervisord
+# docker run --name=xxx -d -P --env container=docker --env container_uuid=xxxx --env LANG=ja_JP.UTF-8 --entrypoint /usr/bin/supervisord takaomag/xfce4.tigervnc --nodaemon --configuration=/etc/supervisord.conf
+
 # docker exec xxx /bin/bash -c 'export HOME=/root && vncserver -kill :1'
 #    vncserver :1 -autokill &&
 #    (vncserver -kill :1 || true) &&

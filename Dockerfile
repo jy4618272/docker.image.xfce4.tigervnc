@@ -42,7 +42,7 @@ RUN \
     pacman-key --lsign-key 962DDE58 && \
     sudo -u nobody yaourt -Syy && \
     sudo -u nobody yaourt -S --needed --noconfirm --noprogressbar "${REQUIRED_PACKAGES[@]}" && \
-    cd /usr/lib/systemd/system && \
+    cd /usr/lib/systemd/system/multi-user.target.wants && \
     ln -s ../x-vncserver@.service x-vncserver@:1.service && \
     cd /tmp && \
     echo -e "${FONT_SUCCESS}[SUCCESS] Installed required packages [${REQUIRED_PACKAGES[@]}]${FONT_DEFAULT}" && \

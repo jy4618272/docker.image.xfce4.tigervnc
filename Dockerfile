@@ -1,6 +1,6 @@
 # xfce4-tigervnc
 
-FROM takaomag/base:2015.12.06.13.39
+FROM takaomag/base:2015.12.07.05.00
 
 ENV \
     X_DOCKER_REPO_NAME=xfce4.tigervnc
@@ -34,7 +34,7 @@ RUN \
     reflector --latest 100 --verbose --sort score --save /etc/pacman.d/mirrorlist && \
     sudo -u nobody yaourt -Syy && \
     echo -e "${FONT_SUCCESS}[SUCCESS] Updated package database${FONT_DEFAULT}" && \
-    REQUIRED_PACKAGES=("supervisor" "vim" "xorg-server" "xorg-server-utils" "xorg-xinit" "xfce4" "xfce4-goodies" "fcitx" "fcitx-gtk3" "fcitx-configtool" "fcitx-kkc" "firefox" "firefox-i18n-ja" "arch-firefox-search" "tigervnc" "ttf-dejavu" "otf-ipafont" "infinality-bundle" "fontforge" "terminator" "wireshark-gtk" "pycharm-professional") && \
+    REQUIRED_PACKAGES=("supervisor" "vim" "xorg-server" "xorg-server-utils" "xorg-xinit" "xfce4" "xfce4-goodies" "fcitx" "fcitx-gtk3" "fcitx-configtool" "fcitx-kkc" "firefox" "firefox-i18n-ja" "arch-firefox-search" "tigervnc" "ttf-dejavu" "otf-ipafont" "infinality-bundle" "fontforge" "terminator" "wireshark-gtk" "pycharm-professional" "mariadb" "postgresql") && \
     echo -e "${FONT_INFO}[INFO] Installing required packages [${REQUIRED_PACKAGES[@]}]${FONT_DEFAULT}" && \
     cd /tmp && \
     echo -e "# ${X_DOCKER_ID}/${X_DOCKER_REPO_NAME} >>>\n[infinality-bundle]\nServer = http://bohoomil.com/repo/\$arch\n# ${X_DOCKER_ID}/${X_DOCKER_REPO_NAME} <<<\n" >> /etc/pacman.conf && \

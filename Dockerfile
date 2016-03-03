@@ -1,6 +1,6 @@
 # xfce4-tigervnc
 
-FROM takaomag/base:2015.12.07.05.00
+FROM takaomag/base:2016.03.03.02.28
 
 ENV \
     X_DOCKER_REPO_NAME=xfce4.tigervnc
@@ -11,7 +11,7 @@ ADD files/root /root
 ADD files/usr/lib/systemd/system /usr/lib/systemd/system
 
 RUN \
-    echo "2015-12-04-0" > /dev/null && \
+    echo "2016-03-03-0" > /dev/null && \
     export TERM=dumb && \
     export LANG='en_US.UTF-8' && \
     source /opt/local/bin/x-set-shell-fonts-env.sh && \

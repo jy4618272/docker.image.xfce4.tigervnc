@@ -1,6 +1,6 @@
 # xfce4-tigervnc
 
-FROM takaomag/base:2016.03.03.02.28
+FROM takaomag/base:2016.03.08.06.57
 
 ENV \
     X_DOCKER_REPO_NAME=xfce4.tigervnc
@@ -11,7 +11,7 @@ ADD files/root /root
 ADD files/usr/lib/systemd/system /usr/lib/systemd/system
 
 RUN \
-    echo "2016-03-03-0" > /dev/null && \
+    echo "2016-03-08-0" > /dev/null && \
     export TERM=dumb && \
     export LANG='en_US.UTF-8' && \
     source /opt/local/bin/x-set-shell-fonts-env.sh && \
@@ -88,7 +88,7 @@ RUN \
     echo -e "${FONT_INFO}[INFO] Changed vnc password [password=${X_DOCKER_ID}]${FONT_DEFAULT}" && \
     echo -e "${FONT_INFO}[INFO] Configured xfce4/vnc${FONT_DEFAULT}" && \
     /opt/local/bin/x-archlinux-remove-unnecessary-files.sh && \
-    pacman-optimize && \
+#    pacman-optimize && \
     rm -f /etc/machine-id
 
 EXPOSE \

@@ -1,6 +1,6 @@
 # xfce4-tigervnc
 
-FROM takaomag/base:2016.03.08.06.57
+FROM takaomag/base:latest
 
 ENV \
     X_DOCKER_REPO_NAME=xfce4.tigervnc

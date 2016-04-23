@@ -1,6 +1,6 @@
 # xfce4-tigervnc
 
-FROM takaomag/base:latest
+FROM takaomag/jupyter.notebook:latest
 
 ENV \
     X_DOCKER_REPO_NAME=xfce4.tigervnc

@@ -34,6 +34,9 @@ RUN \
     reflector --latest 100 --verbose --sort score --save /etc/pacman.d/mirrorlist && \
     sudo -u nobody yaourt -Syy && \
     echo -e "${FONT_SUCCESS}[SUCCESS] Updated package database${FONT_DEFAULT}" && \
+    echo -e "${FONT_INFO}[INFO] Refreshing package developer keys${FONT_DEFAULT}" && \
+    pacman-key --refresh-keys && \
+    echo -e "${FONT_SUCCESS}[SUCCESS] Refreshed package developer keys${FONT_DEFAULT}" && \
     REQUIRED_PACKAGES=("supervisor" "vim" "xorg-server" "xorg-server-utils" "xorg-xinit" "xfce4" "xfce4-goodies" "fcitx" "fcitx-gtk3" "fcitx-configtool" "fcitx-kkc" "firefox" "firefox-i18n-ja" "arch-firefox-search" "tigervnc" "ttf-dejavu" "otf-ipafont" "ttf-mplus" "infinality-bundle" "fontforge" "terminator" "wireshark-gtk" "pycharm-professional" "mariadb" "postgresql") && \
     echo -e "${FONT_INFO}[INFO] Installing required packages [${REQUIRED_PACKAGES[@]}]${FONT_DEFAULT}" && \
     cd /tmp && \

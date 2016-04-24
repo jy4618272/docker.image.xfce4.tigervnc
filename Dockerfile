@@ -37,13 +37,9 @@ RUN \
     echo -e "${FONT_INFO}[INFO] Refreshing package developer keys${FONT_DEFAULT}" && \
     pacman-key --refresh-keys && \
     echo -e "${FONT_SUCCESS}[SUCCESS] Refreshed package developer keys${FONT_DEFAULT}" && \
+    grep --silent 'infinality-bundle' /etc/pacman.conf || (echo -e "# ${X_DOCKER_ID}/${X_DOCKER_REPO_NAME} >>>\n[infinality-bundle]\nServer = http://bohoomil.com/repo/\$arch\n# ${X_DOCKER_ID}/${X_DOCKER_REPO_NAME} <<<\n" >> /etc/pacman.conf && pacman-key -r 962DDE58 && pacman-key --lsign-key 962DDE58 && sudo -u nobody yaourt -Syy) && \
     REQUIRED_PACKAGES=("supervisor" "vim" "xorg-server" "xorg-server-utils" "xorg-xinit" "xfce4" "xfce4-goodies" "fcitx" "fcitx-gtk3" "fcitx-configtool" "fcitx-kkc" "firefox" "firefox-i18n-ja" "arch-firefox-search" "tigervnc" "ttf-dejavu" "otf-ipafont" "ttf-mplus" "infinality-bundle" "fontforge" "terminator" "wireshark-gtk" "pycharm-professional" "mariadb" "postgresql") && \
     echo -e "${FONT_INFO}[INFO] Installing required packages [${REQUIRED_PACKAGES[@]}]${FONT_DEFAULT}" && \
-    cd /tmp && \
-    echo -e "# ${X_DOCKER_ID}/${X_DOCKER_REPO_NAME} >>>\n[infinality-bundle]\nServer = http://bohoomil.com/repo/\$arch\n# ${X_DOCKER_ID}/${X_DOCKER_REPO_NAME} <<<\n" >> /etc/pacman.conf && \
-    pacman-key -r 962DDE58 && \
-    pacman-key --lsign-key 962DDE58 && \
-    sudo -u nobody yaourt -Syy && \
     sudo -u nobody yaourt -S --needed --noconfirm --noprogressbar "${REQUIRED_PACKAGES[@]}" && \
     cd /usr/lib/systemd/system/multi-user.target.wants && \
     ln -s ../x-vncserver@.service x-vncserver@:1.service && \

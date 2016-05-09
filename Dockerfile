@@ -11,7 +11,7 @@ ADD files/root /root
 ADD files/usr/lib/systemd/system /usr/lib/systemd/system
 
 RUN \
-    echo "2016-03-08-0" > /dev/null && \
+    echo "2016-05-09-0" > /dev/null && \
     export TERM=dumb && \
     export LANG='en_US.UTF-8' && \
     source /opt/local/bin/x-set-shell-fonts-env.sh && \

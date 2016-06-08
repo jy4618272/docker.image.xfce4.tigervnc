@@ -1,6 +1,6 @@
 # xfce4-tigervnc
 
-FROM takaomag/jupyter.notebook:latest
+FROM takaomag/jupyter.notebook:4.2.1-2016.06.07.07.30
 
 ENV \
     X_DOCKER_REPO_NAME=xfce4.tigervnc
@@ -11,10 +11,17 @@ ADD files/root /root
 ADD files/usr/lib/systemd/system /usr/lib/systemd/system
 
 RUN \
-    echo "2016-05-09-0" > /dev/null && \
+    echo "2016-04-22-0" > /dev/null && \
     export TERM=dumb && \
     export LANG='en_US.UTF-8' && \
     source /opt/local/bin/x-set-shell-fonts-env.sh && \
+    echo -e "${FONT_INFO}[INFO] Updating package database${FONT_DEFAULT}" && \
+    reflector --latest 100 --verbose --sort score --save /etc/pacman.d/mirrorlist && \
+    sudo -u nobody yaourt -Syy && \
+    echo -e "${FONT_SUCCESS}[SUCCESS] Updated package database${FONT_DEFAULT}" && \
+    echo -e "${FONT_INFO}[INFO] Refreshing package developer keys${FONT_DEFAULT}" && \
+    pacman-key --refresh-keys && \
+    echo -e "${FONT_SUCCESS}[SUCCESS] Refreshed package developer keys${FONT_DEFAULT}" && \
     chown -R root:root /etc/supervisor.d && \
     chmod 755 /etc/supervisor.d && \
     chmod 755 /etc/supervisor.d/vncserver && \
@@ -30,13 +37,6 @@ RUN \
     chmod 700 /root/.vnc && \
     chmod 755 /root/.vnc/xstartup && \
     chmod 644 /usr/lib/systemd/system/x-vncserver@.service && \
-    echo -e "${FONT_INFO}[INFO] Updating package database${FONT_DEFAULT}" && \
-    reflector --latest 100 --verbose --sort score --save /etc/pacman.d/mirrorlist && \
-    sudo -u nobody yaourt -Syy && \
-    echo -e "${FONT_SUCCESS}[SUCCESS] Updated package database${FONT_DEFAULT}" && \
-    echo -e "${FONT_INFO}[INFO] Refreshing package developer keys${FONT_DEFAULT}" && \
-    pacman-key --refresh-keys && \
-    echo -e "${FONT_SUCCESS}[SUCCESS] Refreshed package developer keys${FONT_DEFAULT}" && \
     grep --silent 'infinality-bundle' /etc/pacman.conf || (echo -e "# ${X_DOCKER_ID}/${X_DOCKER_REPO_NAME} >>>\n[infinality-bundle]\nServer = http://bohoomil.com/repo/\$arch\n# ${X_DOCKER_ID}/${X_DOCKER_REPO_NAME} <<<\n" >> /etc/pacman.conf && pacman-key -r 962DDE58 && pacman-key --lsign-key 962DDE58 && sudo -u nobody yaourt -Syy) && \
     REQUIRED_PACKAGES=("supervisor" "vim" "xorg-server" "xorg-server-utils" "xorg-xinit" "xfce4" "xfce4-goodies" "fcitx" "fcitx-gtk3" "fcitx-configtool" "fcitx-kkc" "firefox" "firefox-i18n-ja" "arch-firefox-search" "tigervnc" "ttf-dejavu" "otf-ipafont" "ttf-mplus" "infinality-bundle" "fontforge" "terminator" "wireshark-gtk" "pycharm-professional" "mariadb" "postgresql") && \
     echo -e "${FONT_INFO}[INFO] Installing required packages [${REQUIRED_PACKAGES[@]}]${FONT_DEFAULT}" && \

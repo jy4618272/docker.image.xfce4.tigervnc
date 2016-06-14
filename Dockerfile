@@ -1,6 +1,6 @@
 # xfce4-tigervnc
 
-FROM takaomag/jupyter.notebook:4.2.1-2016.06.07.07.30
+FROM takaomag/jupyter.notebook:4.2.1-2.0.0-2016.06.07.07.30
 
 ENV \
     X_DOCKER_REPO_NAME=xfce4.tigervnc
